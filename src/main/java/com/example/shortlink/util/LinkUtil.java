@@ -13,6 +13,7 @@ public class LinkUtil {
     public static final int END_OF_SHORT_LINK_SIZE = 10;
     public static final String LONG_LINK_REQUIRED = "Нужен длинный линк.";
     public static final String TTL_IS_NOT_A_NUMBER = "TTL должен быть числом.";
+    public static final String TTL_MUST_BE_POSITIVE = "TTL должен быть больше нуля.";
 
     public static Link toLink(LinkRequestDTO linkRequestDTO) {
         String longLink = linkRequestDTO.getLongLink().trim();
@@ -28,7 +29,9 @@ public class LinkUtil {
 
         if (!ttl.isEmpty()){
             try{
-                link.setTtl(Timestamp.from(Instant.now().plus(Integer.parseInt(ttl), ChronoUnit.DAYS)));
+                int expire = Integer.parseInt(ttl);
+                if (expire > 0) link.setTtl(Timestamp.from(Instant.now().plus(expire, ChronoUnit.DAYS)));
+                else throw new DataRequestException(TTL_MUST_BE_POSITIVE);
             }
             catch (NumberFormatException e) {
                 throw new DataRequestException(TTL_IS_NOT_A_NUMBER);
