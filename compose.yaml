@@ -2,7 +2,7 @@ version: "1.0"
 name: shortlinkapi
 services:
   postgres:
-    container_name: psgrs
+    container_name: postgres
     image: postgres:latest
     environment:
       POSTGRES_DB: "shortlink_db"
@@ -10,3 +10,14 @@ services:
       POSTGRES_PASSWORD: "passwd"
     ports:
       - "5432:5432"
+  userapi:
+    container_name: userapi
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/shortlink_db
